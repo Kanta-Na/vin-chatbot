@@ -1,5 +1,9 @@
 
-.env
+# Python(.venv 仮想環境など)
+backend/.venv/
+backend/.env
+backend/logs/
+
+# Pythonキャッシュ
 __pycache__/
-logs/
-.venv/
+
