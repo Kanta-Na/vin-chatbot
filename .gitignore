@@ -3,6 +3,7 @@
 backend/.venv/
 backend/.env
 backend/logs/
+backend/__pycache__/
 
 # Pythonキャッシュ
 __pycache__/
