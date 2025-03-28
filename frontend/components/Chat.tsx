@@ -4,8 +4,14 @@
 "use client";
 
 import {useState} from "react";
+import ReactMarkdown from "react-markdown";    // Markdown描画のため追加
 
 export default function Chat() {
+    /*
+    フロントエンドのロジックとデータ部分。
+    const によって、useState で管理される変数（input, messages, loading）を定義し、
+    sendMessage 関数で、ユーザーのメッセージを送信して、返答を受け取ることを定義。
+    */
     const [input, setInput] = useState("");    // 入力欄の値を管理
     const [messages, setMessages] = useState<{ sender: string; text: string}[]>([]);    // メッセージの履歴を管理
     const [loading, setLoading] = useState(false);    // ローディング状態を管理
@@ -39,28 +45,48 @@ export default function Chat() {
         setLoading(false);
     };
 
-    // 表示する画面の中身を定義（HTMLっぽいけど、JSXという記法）
+    // Enterキーを押したときの処理
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();    // 改行せずに送信
+        sendMessage();
+      }
+    }
+
+    // 表示する画面の中身を定義（HTMLっぽいけど、JSXという記法）（UIの部分）
     return (
-        <div className="max-w-xl mx-auto p-4">
-          <h1 className="text-2xl font-bold mb-4">🍷 WineChatBot</h1>
+        <div className="h-screen flex flex-col max-w-3xl mx-auto p-4">
+
+          {/* "className" は Tailwind CSS のユーティリティクラスである。*/}
+          {/* ユーティリティクラスは、クラス名を指定するだけで、スタイルを適用できる。*/}
+          {/*例えば、max-w-xlは、最大幅をxlに設定するという意味。*/}
+          {/*mx-autoは、左右のマージンを自動で設定するという意味。*/}
+          {/*p-4は、パディングを4pxに設定するという意味。*/}
+
+          <h1 className="text-3xl font-bold mb-4">🍷 WineChatBot</h1>
     
-          <div className="space-y-2 mb-4 h-64 overflow-y-auto border p-2 rounded">
+          <div className="flex-1 overflow-y-auto border p-4 rounded mb-4 bg-gray-50">
             {messages.map((msg, index) => (
-              <div key={index} className={msg.sender === "You" ? "text-right" : "text-left"}>
-                <span className="font-semibold">{msg.sender}:</span> {msg.text}
+              <div key={index} className={`mb-3 p-3 rounded ${msg.sender === "You" ? "text-right bg-white" : "text-left bg-blue-100"}`}>
+                <div className="font-semibold mb-1">{msg.sender}:</div>
+                <div className="prose prose-sm whitespace-pre-wrap">
+                  {/* GPT-4o 出力の Markdown に対応 */}
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                </div>
               </div>
             ))}
             {loading && <div className="text-gray-500">WineBot: 考え中...</div>}
           </div>
     
           <div className="flex gap-2">
-            {/* 入力欄 */}
-            <input
-              type="text"
+            {/* 入力欄 （自動リサイズするテキストエリア）*/}
+            <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="ワインについて聞いてみよう！"
-              className="flex-grow border p-2 rounded"
+              onKeyDown={handleKeyDown}
+              placeholder="ワインについて聞いてみよう！（Shift+Enterで改行）"
+              className="flex-grow border p-2 rounded resize-none"
+              rows={2}
             />
             {/* 送信ボタン */}
             <button
