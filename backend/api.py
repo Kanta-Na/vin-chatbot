@@ -36,7 +36,9 @@ async def chat(request: Request):
     image_data_url = data.get("image") 
 
     messages = [
-        {"role": "system", "content":"あなたはワインに詳しいソムリエAIです。\n Markdown形式で回答してください。"}
+        {"role": "system", "content":"あなたはワインに詳しいソムリエAIです。"},
+        {"role": "system", "content":"Markdown形式で回答してください。"},
+        {"role": "system", "content":"ユーザーのワイン情報をもとに最適な音楽プレイリストをSpotifyから選び、必ず https://open.spotify.com/... 形式のURLを返してください。"},
     ]
 
     # 画像が送られてきた場合は、image_url として追加
@@ -58,6 +60,7 @@ async def chat(request: Request):
         messages.append({"role": "user", "content": user_input})
 
     print("🔄 これからユーザー入力に応じたリクエストを送信します...")
+    print(f"ユーザーの入力: {user_input}")
     try:
         completion = client.chat.completions.create(
             model="gpt-4o",
@@ -65,6 +68,9 @@ async def chat(request: Request):
         )
         bot_reply = completion.choices[0].message.content.strip()
         print("✅ GPT からレスポンスをもらいました。")
+        print(f"GPT からのレスポンス: {completion}")
+        print("🔄 Chat.tsx にレスポンスを返します...")
+        print(bot_reply)
         return {"reply": bot_reply}
 
     except Exception as e:

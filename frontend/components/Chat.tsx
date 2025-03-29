@@ -72,20 +72,15 @@ export default function Chat() {
     }
 
     // 表示する画面の中身を定義（HTMLっぽいけど、JSXという記法）（UIの部分）
-    return (
-        <div className="h-screen flex flex-row overflow-hidden">
-
-          {/* "className" は Tailwind CSS のユーティリティクラスである。*/}
-          {/* ユーティリティクラスは、クラス名を指定するだけで、スタイルを適用できる。*/}
-          {/*例えば、max-w-xlは、最大幅をxlに設定するという意味。*/}
-          {/*mx-autoは、左右のマージンを自動で設定するという意味。*/}
-          {/*p-4は、パディングを4pxに設定するという意味。*/}
+    // "className" は Tailwind CSS のユーティリティクラスである。
+    return (
+          <div className="h-screen flex justify-center">
 
           {/* 🎤チャット画面 （左）*/}
           <div className="flex flex-col flex-1 max-w-4xl mx-auto p-4">
             <h1 className="text-3xl font-bold mb-4">🍷 WineChatBot</h1>
             {/* メッセージ履歴 */}
-            <div className="flex-1 overflow-y-auto border p-4 rounded mb-4 bg-gray-50">
+            <div className="flex-1 overflow-y-auto border p-4 rounded mb-4 bg-gray-50 h-20">
               {messages.map((msg, index) => (
                 <div key={index} className={`mb-3 p-3 rounded ${msg.sender === "You" ? "text-right bg-white" : "text-left bg-blue-100"}`}>
                   <div className="font-semibold mb-1">{msg.sender}:</div>
@@ -130,7 +125,7 @@ export default function Chat() {
               ></iframe>
             ) : (
               // Spotify がない場合はプレースホルダー
-              <div className="h[600px] bg-green-200 flex items-center justify-center rounded-lg">
+              <div className="h-[600px] bg-green-200 flex items-center justify-center rounded-lg">
                 こちらに音楽が表示されます！
               </div>
             )}

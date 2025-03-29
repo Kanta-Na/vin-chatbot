@@ -36,7 +36,7 @@ def chat():
 
         send_image = input("画像も一緒に送りますか？（y/n）: ").strip().lower()
         messages = [
-            {"role": "system", "content": "あなたはワインに詳しいソムリエです。ユーザーのワイン情報をもとに最適な音楽をSpotifyから選び、必ず https://open.spotify.com/... 形式のURLを返してください。"},
+            {"role": "system", "content": "あなたはワインに詳しいソムリエです。"},
         ]
 
         if send_image == "y":
