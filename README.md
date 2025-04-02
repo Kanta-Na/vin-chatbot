@@ -1,5 +1,7 @@
 # WineChatBot（仮）
 
+## [Vin ChatBot]{https://vin-chatbot.vercel.app/}
+
 ## 概要
 このプロジェクトは、ワイン愛好家向けのChatBotアプリです。
 OpenAI APIを活用し、将来的にはRAGやSpotify APIと連携して、以下のような体験を提供予定です。
