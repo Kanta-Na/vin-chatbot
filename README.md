@@ -1,6 +1,6 @@
 # WineChatBot（仮）
 
-## [Vin ChatBot]{https://vin-chatbot.vercel.app/}
+## [Vin ChatBot](https://vin-chatbot.vercel.app/)
 
 ## 概要
 このプロジェクトは、ワイン愛好家向けのChatBotアプリです。
