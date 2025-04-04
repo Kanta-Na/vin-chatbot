@@ -74,7 +74,7 @@ export default function Chat() {
     // 表示する画面の中身を定義（HTMLっぽいけど、JSXという記法）（UIの部分）
     // "className" は Tailwind CSS のユーティリティクラスである。
     return (
-          <div className="h-screen flex justify-center">
+        <div className="h-screen flex justify-center">
 
           {/* 🎤チャット画面 （左）*/}
           <div className="flex flex-col flex-1 max-w-4xl mx-auto p-4">
