@@ -16,7 +16,9 @@ app = FastAPI()
 # CORS対応（ローカルのフロントエンドと連携するため）
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],    # 開発中は "*" でok、本番では限定すべき
+    allow_origins=[
+        "https://vin-chatbot.vercel.app/",
+    ],    # フロントエンド（Vercel）のURLだけ許可
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -76,9 +78,6 @@ async def chat(request: Request):
     except Exception as e:
         return {"error": str(e)}
 
-# ローカルで実行する場合は、以下のコマンドを実行
-#if __name__ == "__main__":
-#    chat()
 
 # ルートパスのテスト
 @app.get("/")

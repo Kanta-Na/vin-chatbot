@@ -36,7 +36,7 @@ export default function Chat() {
 
         try {
             // fetch(...)：ネットワークリクエストを送信する関数(APIへリクエストを送信する。JavaScriptの標準関数。)   
-            const res = await fetch("http://localhost:8000/chat", {
+            const res = await fetch("https://vin-chatbot.onrender.com/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: input}),
