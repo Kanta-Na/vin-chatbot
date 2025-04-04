@@ -1,10 +1,11 @@
-service:
+services:
   - type: web
     name: vin-chatbot-api
     env: python
     plan: free
-    buildCommand: ""
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn api:app --host 0.0.0.0 --port 10000
+    rootDir: backend
     envVars:
       - key: OPENAI_API_KEY
         sync: false
