@@ -1,15 +1,7 @@
-
-
----
-
-## ✅ ③ `frontend/README.md` のマークダウン
-
-```markdown
-# 🍷 WineChatBot - Frontend (Next.js)
+# ChatBot - Frontend (Next.js)
 
 このディレクトリは、WineChatBotのフロントエンド（UI）を構成しています。以下の機能があります：
 
-- GPTベースのチャットUI
 - Tailwind CSS を使ったスタイリング
 - Markdown形式の回答レンダリング対応
 - Spotifyの埋め込みプレイヤー表示対応
@@ -24,9 +16,7 @@
 cd frontend
 npm install
 npm run dev
-
-
----
+```
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
