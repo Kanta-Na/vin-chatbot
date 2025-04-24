@@ -18,6 +18,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://vin-chatbot.vercel.app/",
+        "https://vin-chatbot.vercel.app",
+        "http://localhost:3000",
     ],    # フロントエンド（Vercel）のURLだけ許可
     allow_credentials=True,
     allow_methods=["*"],
