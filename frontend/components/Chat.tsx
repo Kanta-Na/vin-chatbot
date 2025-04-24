@@ -17,11 +17,12 @@ export default function Chat() {
     const [loading, setLoading] = useState(false);    // ローディング状態を管理
     const [spotifyUrl, setSpotifyUrl] = useState<string | null>(null);    // Spotify URL を管理
 
-    // Spotify URL を抽出する関数
+    /* Spotify URL を抽出する関数
     const extractSpotifyUrl = (text: string): string | null => {
       const match = text.match(/https:\/\/open\.spotify\.com\/[^\s)]+/);
       return match ? match[0] : null;
     };
+    */
 
     // メッセージを送信する関数
     const sendMessage = async () => {
@@ -46,14 +47,21 @@ export default function Chat() {
             const data = await res.json();
 
             // ボットのメッセージを作成する
+            // data は {"reply": "…", "spotify_url": "…"} のような形。
             const botMessage = { sender: "WineBot", text: data.reply || data.error || "エラーが発生しました。",};
             setMessages((prev) => [...prev, botMessage]);
             
             // 🎧Spotify URL を抽出する
+            if (data.spotify_url) {
+              setSpotifyUrl(data.spotify_url)
+            }
+
+            /* （旧）🎧Spotify URL を抽出する
             const foundUrl = extractSpotifyUrl(botMessage.text);
             if (foundUrl) {
               setSpotifyUrl(foundUrl);
             }
+            */
 
         } catch (error) {
             setMessages((prev) => [...prev, {sender: "WineBot", text: "通信エラーが発生しました。"}]);
@@ -115,7 +123,8 @@ export default function Chat() {
           <div className="w-[300px] p-4">
             {spotifyUrl ? (
               <iframe
-                src={`https://open.spotify.com/embed${new URL(spotifyUrl).pathname}`}
+                src={spotifyUrl}
+                //src={`https://open.spotify.com/embed${new URL(spotifyUrl).pathname}`}
                 width="100%"
                 height="600"
                 style={{ border: "none"}}
@@ -125,7 +134,7 @@ export default function Chat() {
               ></iframe>
             ) : (
               // Spotify がない場合はプレースホルダー
-              <div className="h-[600px] bg-green-200 flex items-center justify-center rounded-lg">
+              <div className="h-[600px] min-w-[320px] bg-green-200 flex items-center justify-center rounded-lg">
                 こちらに音楽が表示されます！
               </div>
             )}
