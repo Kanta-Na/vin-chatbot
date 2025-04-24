@@ -67,7 +67,7 @@ async def chat(request: Request):
     print(f"ユーザーの入力: {user_input}")
     try:
         completion = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=messages,
         )
         bot_reply = completion.choices[0].message.content.strip()
