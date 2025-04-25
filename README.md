@@ -14,12 +14,10 @@
 
 <details>
 <summary>▶️ WineChatBot デモ動画 </summary>
-<p align="center">
-  <video width="640" controls>
-    <source src="source/demo.mp4" type="video/mp4">
-    お使いのブラウザは video タグに対応していません。
-  </video>
-</p>
+
+![WineChatBot デモ動画](source/demo.mp4)
+
+*お使いのブラウザは動画の表示に対応していない場合があります。*
 
 </details>
 
@@ -45,7 +43,6 @@ flowchart LR
   SEARCH -->|ID 取得| API
   API -->|JSON {reply, spotify_url}| UI
   UI -->|iframe src=spotify_url| Player[Spotify Embed]
-```
 
 ---
 
