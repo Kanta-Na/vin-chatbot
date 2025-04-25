@@ -1,41 +1,75 @@
-# WineChatBot（仮）
 
-## [Vin ChatBot](https://vin-chatbot.vercel.app/)
+# Wine ChatBot
 
-<h3 align="center">📽 デモ (自動再生 / ループ / ミュート)</h3>
+---
 
+## 【概要】
+
+**WineChatBot** は、ワインに関する質問をすると、そのワインの背景や特徴について回答してくれると同時に、**そのワインを楽しむシーンにぴったりな音楽も自動でレコメンドしてくれる**AIチャットボットです。
+本プロジェクトの目的は、**フロントエンド〜バックエンド〜デプロイまで、アプリ開発の一連の流れを実践的に学ぶこと**です。
+
+---
+
+## 📽 デモ動画
+
+<details>
+<summary>▶️ WineChatBot デモ動画 </summary>
 <p align="center">
-  <video
-    src="./demo.mp4"      <!-- パス or URL -->
-    width="640"
-    autoplay
-    loop
-    muted
-    playsinline
-  ></video>
+  <video width="640" controls>
+    <source src="source/demo.mp4" type="video/mp4">
+    お使いのブラウザは video タグに対応していません。
+  </video>
 </p>
 
+</details>
 
-## 概要
-このプロジェクトは、ワイン愛好家向けのChatBotアプリです。
-OpenAI APIを活用し、将来的にはRAGやSpotify APIと連携して、様々な体験を提供予定です。
+---
 
-## 開発目的
-- ChatBot開発の技術習得
+## ⚙️ アーキテクチャ概要（Mermaid）
 
-## 実装機能（初期）
-- ユーザー入力に対するOpenAIの応答表示
-- CLIまたは簡易UIでのチャットインターフェース
+```mermaid
+flowchart LR
+  subgraph Frontend [Frontend (Vercel / Next.js)]
+    UI[ブラウザ UI<br/>(React, TypeScript)]
+  end
 
-## 使用技術
-- Python
-- OpenAI API
-- ローカル開発（Cursor）
-- GitHub
+  subgraph Backend [Backend (Render / FastAPI)]
+    API[/POST /chat<br/>FastAPI/]
+  end
 
-## 構成
+  UI -->|POST /chat| API
+  API -->|GPT プロンプト送信| GPT[OpenAI GPT-4o]
+  GPT -->|JSON (reply + query)| API
+  API -->|トークン取得| AUTH[Spotify Token<br/>(POST /api/token)]
+  API -->|プレイリスト検索| SEARCH[Spotify Search<br/>(GET /v1/search)]
+  SEARCH -->|ID 取得| API
+  API -->|JSON {reply, spotify_url}| UI
+  UI -->|iframe src=spotify_url| Player[Spotify Embed]
+```
 
+---
 
-## 今後の予定
-- Vector DBを使ったRAG機能の実装
-- Spotify API連携
+## 【技術スタック】
+
+| カテゴリ | 使用技術・サービス |
+| --- | --- |
+| **フロントエンド** | Next.js（React + TypeScript）、Tailwind CSS |
+| **バックエンド** | FastAPI、OpenAI API（GPT-4o） |
+| **音楽レコメンド** | Spotify Web API（埋め込み対応） |
+| **デプロイ** | Vercel（フロント）、Render（バックエンド） |
+| **その他** | `.env` 管理、CORS設定、REST通信、JSONパース、Markdownレンダリング、ローディング制御など |
+
+---
+
+## 【デプロイ先】
+* フロントエンド：[Vercel](https://vercel.com/)
+* バックエンド：[Render](https://dashboard.render.com/)
+
+---
+
+## 【主な機能】
+
+- GPT-4oを用いた**自然な会話型ワインアドバイザー**
+- 入力されたワイン名や趣向から、**最適なSpotify音楽プレイリストを提案**
+- Markdown形式によるわかりやすい出力
+- **ブラウザで利用可能なGUIチャットインターフェース**
