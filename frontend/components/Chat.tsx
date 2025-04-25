@@ -37,6 +37,8 @@ export default function Chat() {
 
         try {
             // fetch(...)：ネットワークリクエストを送信する関数(APIへリクエストを送信する。JavaScriptの標準関数。)   
+            // test時：http://localhost:8000/chat
+            // デプロイ時：https://vin-chatbot.onrender.com/chat
             const res = await fetch("https://vin-chatbot.onrender.com/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -55,13 +57,6 @@ export default function Chat() {
             if (data.spotify_url) {
               setSpotifyUrl(data.spotify_url)
             }
-
-            /* （旧）🎧Spotify URL を抽出する
-            const foundUrl = extractSpotifyUrl(botMessage.text);
-            if (foundUrl) {
-              setSpotifyUrl(foundUrl);
-            }
-            */
 
         } catch (error) {
             setMessages((prev) => [...prev, {sender: "WineBot", text: "通信エラーが発生しました。"}]);
@@ -124,7 +119,6 @@ export default function Chat() {
             {spotifyUrl ? (
               <iframe
                 src={spotifyUrl}
-                //src={`https://open.spotify.com/embed${new URL(spotifyUrl).pathname}`}
                 width="100%"
                 height="600"
                 style={{ border: "none"}}
@@ -134,7 +128,7 @@ export default function Chat() {
               ></iframe>
             ) : (
               // Spotify がない場合はプレースホルダー
-              <div className="h-[600px] min-w-[320px] bg-green-200 flex items-center justify-center rounded-lg">
+              <div className="h-[600px] bg-green-200 flex items-center justify-center rounded-lg">
                 こちらに音楽が表示されます！
               </div>
             )}
