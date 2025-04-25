@@ -13,11 +13,9 @@
 ## 📽 デモ動画
 
 <details>
-<summary>▶️ WineChatBot デモ動画 </summary>
+▶️ WineChatBot デモ動画
 
 ![WineChatBot デモ動画](source/demo.mp4)
-
-*お使いのブラウザは動画の表示に対応していない場合があります。*
 
 </details>
 
@@ -43,6 +41,7 @@ flowchart LR
   SEARCH -->|ID 取得| API
   API -->|JSON {reply, spotify_url}| UI
   UI -->|iframe src=spotify_url| Player[Spotify Embed]
+```
 
 ---
 
