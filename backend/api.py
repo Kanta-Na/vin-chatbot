@@ -1,9 +1,11 @@
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import openai, base64, os, requests, time, json
+import openai, base64, os, requests, time, json, certifi
 from dotenv import load_dotenv
 from openai import OpenAI
 from PIL import Image
+from urllib.parse import urlencode
 
 load_dotenv()
 client = OpenAI()
@@ -22,21 +24,88 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Spotify API
-SPOTIFY_TOKEN_CACHE = {"token": None, "exp": 0}
-
-def get_spotify_token():
-    if SPOTIFY_TOKEN_CACHE["token"] and SPOTIFY_TOKEN_CACHE["exp"] > time.time():
-        return SPOTIFY_TOKEN_CACHE["token"]
+# Spotify Web API Class
+class SpotifyAPI:
+    def __init__(self, client_id, client_secret):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.token = None
+        self.token_url = "https://accounts.spotify.com/api/token"
+        self.base_url = "https://api.spotify.com/v1/"
+        
+    def get_token(self):
+        """アクセストークンを取得する"""
+        auth_string = f"{self.client_id}:{self.client_secret}"
+        auth_bytes = auth_string.encode("utf-8")
+        auth_base64 = base64.b64encode(auth_bytes).decode("utf-8")
+        
+        headers = {
+            "Authorization": f"Basic {auth_base64}",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        
+        data = {"grant_type": "client_credentials"}
+        result = requests.post(self.token_url, headers=headers, data=data)
+        json_result = json.loads(result.content)
+        self.token = json_result["access_token"]
+        return self.token
     
-    auth = f"{os.getenv('SPOTIFY_CLIENT_ID')}:{os.getenv('SPOTIFY_CLIENT_SECRET')}"
-    headers = {"Authorization": "Basic" + base64.b64encode(auth.encode()).decode()}
-    data = {"grant_type": "client_credentials"}
-    r = requests.post("https://accounts.apotify.com/api/token", headers=headers, data=data)
-    token = r.json()["access_token"]
-    SPOTIFY_TOKEN_CACHE["token"] = token
-    SPOTIFY_TOKEN_CACHE["exp"] = time.time() + 3300    # 55分キャッシュ(有効期限)
-    return token
+    def get_auth_header(self):
+        """認証ヘッダーを生成する"""
+        return {"Authorization": f"Bearer {self.token}"}
+    
+    def search(self, query, search_type="album,playlist", limit=10):
+        """キーワードに基づいてアルバムやプレイリストを検索する"""
+        if not self.token:
+            self.get_token()
+            
+        headers = self.get_auth_header()
+        query_params = urlencode({
+            "q": query,
+            "type": search_type,
+            "limit": limit
+        })
+        
+        query_url = f"{self.base_url}search?{query_params}"
+        result = requests.get(query_url, headers=headers)
+        json_result = json.loads(result.content)
+        return json_result
+    
+    def get_embed_urls(self, query, search_type="album,playlist", limit=5):
+        """検索結果から埋め込みURLを生成する"""
+        search_results = self.search(query, search_type, limit)
+        embed_urls = []
+        
+        # アルバムの埋め込みURL
+        if "albums" in search_results:
+            for album in search_results["albums"]["items"]:
+                album_id = album["id"]
+                embed_url = f"https://open.spotify.com/embed/album/{album_id}"
+                embed_urls.append({
+                    "type": "album",
+                    "name": album["name"],
+                    "artists": [artist["name"] for artist in album["artists"]],
+                    "embed_url": embed_url
+                })
+        
+        # プレイリストの埋め込みURL
+        if "playlists" in search_results:
+            for playlist in search_results["playlists"]["items"]:
+                playlist_id = playlist["id"]
+                embed_url = f"https://open.spotify.com/embed/playlist/{playlist_id}"
+                embed_urls.append({
+                    "type": "playlist",
+                    "name": playlist["name"],
+                    "owner": playlist["owner"]["display_name"],
+                    "embed_url": embed_url
+                })
+        
+        return embed_urls
+    
+spotify_api = SpotifyAPI(
+    client_id=os.getenv("SPOTIFY_CLIENT_ID"),
+    client_secret=os.getenv("SPOTIFY_CLIENT_SECRET"),
+)
 
 # 画像をBase64でエンコードする関数
 def encode_image(image_path: str) -> str:
@@ -91,11 +160,19 @@ async def chat(request: Request):
     spotify_url = None
     if search_term:
         try:
-            token = get_spotify_token()
-            headers = {"Authorization": f"Bearer {token}"}
-            params = {"q": search_term, "type": "playlist", "limit": 1}
-            r = requests.get("https://api.spotify.com/v1/search", headers=headers, params=params)
-            playlists = r.json().get("playlists", {}).get("items", [])
+            # トークンがない場合は取得
+            if not spotify_api.token:
+                spotify_api.get_token()
+            
+            # プレイリストのみを検索
+            search_results = spotify_api.search(
+                query=search_term, 
+                search_type="playlist", 
+                limit=1
+            )
+            
+            # 検索結果からプレイリストを取得
+            playlists = search_results.get("playlists", {}).get("items", [])
             if playlists:
                 playlist_id = playlists[0]["id"]
                 spotify_url = f"https://open.spotify.com/embed/playlist/{playlist_id}"
@@ -125,56 +202,6 @@ async def chat(request: Request):
     except Exception as e:
         return {"error": str(e)}
 
-
-# (旧)チャットAPI
-"""
-@app.post("/chat_old")
-async def chat(request: Request):
-    data = await request.json()
-    user_input = data.get("message", "")
-    image_data_url = data.get("image") 
-
-    messages = [
-        {"role": "system", "content":"あなたはワインに詳しいソムリエAIです。"},
-        {"role": "system", "content":"Markdown形式で回答してください。"},
-        {"role": "system", "content":"ユーザーのワイン情報をもとに最適な音楽プレイリストをSpotifyから選び、必ず https://open.spotify.com/... 形式のURLを返してください。"},
-    ]
-
-    # 画像が送られてきた場合は、image_url として追加
-    # 後に、ドラックアンドドロップで画像を張り付けることができるようにする。
-    if image_data_url:
-        messages.append({
-            "role": "user",
-            "content": [
-                {"type": "input_text", "text": user_input},
-                {
-                    "type": "input_image",
-                    "image_url": {
-                        "url": image_data_url,
-                    }
-                }
-            ]
-        })
-    else:
-        messages.append({"role": "user", "content": user_input})
-
-    print("🔄 これからユーザー入力に応じたリクエストを送信します...")
-    print(f"ユーザーの入力: {user_input}")
-    try:
-        completion = client.chat.completions.create(
-            model="gpt-4o",
-            messages=messages,
-        )
-        bot_reply = completion.choices[0].message.content.strip()
-        print("✅ GPT からレスポンスをもらいました。")
-        print(f"GPT からのレスポンス: {completion}")
-        print("🔄 Chat.tsx にレスポンスを返します...")
-        print(bot_reply)
-        return {"reply": bot_reply}
-
-    except Exception as e:
-        return {"error": str(e)}
-"""
 
 # ルートパスのテスト
 @app.get("/")
