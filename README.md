@@ -2,6 +2,20 @@
 
 ## [Vin ChatBot](https://vin-chatbot.vercel.app/)
 
+<h3 align="center">📽 デモ (自動再生 / ループ / ミュート)</h3>
+
+<p align="center">
+  <video
+    src="./demo.mp4"      <!-- パス or URL -->
+    width="640"
+    autoplay
+    loop
+    muted
+    playsinline
+  ></video>
+</p>
+
+
 ## 概要
 このプロジェクトは、ワイン愛好家向けのChatBotアプリです。
 OpenAI APIを活用し、将来的にはRAGやSpotify APIと連携して、様々な体験を提供予定です。

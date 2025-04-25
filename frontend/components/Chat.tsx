@@ -17,12 +17,6 @@ export default function Chat() {
     const [loading, setLoading] = useState(false);    // ローディング状態を管理
     const [spotifyUrl, setSpotifyUrl] = useState<string | null>(null);    // Spotify URL を管理
 
-    /* Spotify URL を抽出する関数
-    const extractSpotifyUrl = (text: string): string | null => {
-      const match = text.match(/https:\/\/open\.spotify\.com\/[^\s)]+/);
-      return match ? match[0] : null;
-    };
-    */
 
     // メッセージを送信する関数
     const sendMessage = async () => {
