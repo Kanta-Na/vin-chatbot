@@ -12,36 +12,10 @@
 
 ## 📽 デモ動画
 
-<details>
+
 ▶️ WineChatBot デモ動画
 
 ![WineChatBot デモ動画](source/demo.mp4)
-
-</details>
-
----
-
-## ⚙️ アーキテクチャ概要（Mermaid）
-
-```mermaid
-flowchart LR
-  subgraph Frontend [Frontend (Vercel / Next.js)]
-    UI[ブラウザ UI<br/>(React, TypeScript)]
-  end
-
-  subgraph Backend [Backend (Render / FastAPI)]
-    API[/POST /chat<br/>FastAPI/]
-  end
-
-  UI -->|POST /chat| API
-  API -->|GPT プロンプト送信| GPT[OpenAI GPT-4o]
-  GPT -->|JSON (reply + query)| API
-  API -->|トークン取得| AUTH[Spotify Token<br/>(POST /api/token)]
-  API -->|プレイリスト検索| SEARCH[Spotify Search<br/>(GET /v1/search)]
-  SEARCH -->|ID 取得| API
-  API -->|JSON {reply, spotify_url}| UI
-  UI -->|iframe src=spotify_url| Player[Spotify Embed]
-```
 
 ---
 
